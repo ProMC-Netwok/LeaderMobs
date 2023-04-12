@@ -26,6 +26,7 @@ public class Util {
     public static Pattern PERCENTAGE = Pattern.compile("%percentage%");
     private static Pattern PLACEHOLDER_PATTERN = Pattern.compile("[%](mob_)([^%]+)[%]");
     public static DecimalFormat DOUBLE_FORMAT = new DecimalFormat("#.##");
+    public static Pattern REWARD_PATTERN = Pattern.compile("^/?.+;((0\\.[0-9]+)|(1(\\.0+)?))$");
 
     public static float getPercentage(Double damage, Double health) { return (float) (damage / health * 100.0f); }
 

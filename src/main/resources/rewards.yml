@@ -7,6 +7,7 @@ rewards:
           1: # Place (top damage dealt)
             commands:
             - "msg %player_name% 1st!"
+            - "give %player_name% diamond 1;0.1" # chance of 10% giving player 1 diamond
           2:
             commands:
             - "msg %player_name% 2nd!"

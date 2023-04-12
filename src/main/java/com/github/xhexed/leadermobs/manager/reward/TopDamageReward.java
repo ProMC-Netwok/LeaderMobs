@@ -3,11 +3,17 @@ package com.github.xhexed.leadermobs.manager.reward;
 import com.github.xhexed.leadermobs.LeaderMobs;
 import com.github.xhexed.leadermobs.data.DamageTracker;
 import com.github.xhexed.leadermobs.data.MobDamageTracker;
+import jdk.internal.joptsimple.util.RegexMatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
+import org.intellij.lang.annotations.RegExp;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.UUID;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.github.xhexed.leadermobs.util.Util.*;
@@ -36,6 +42,7 @@ public class TopDamageReward {
         }
     }
 
+
     private void giveRewards(List<DamageReward.DamagePlaceReward> rewards,
                              List<DamageTracker> topList,
                              double totalDamage,
@@ -48,12 +55,22 @@ public class TopDamageReward {
             UUID uuid = info.getTracker();
             OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
             for (String command : reward.commands) {
+
                 command = PLAYER_NAME.matcher(command).replaceAll(player.getName());
                 command = DAMAGE_POS.matcher(command).replaceAll(Integer.toString(i + 1));
                 command = damageFormat.matcher(command).replaceAll(DOUBLE_FORMAT.format(info.getTotalDamage()));
                 command = percentageFormat.matcher(command).replaceAll(DOUBLE_FORMAT.format(getPercentage(info.getTotalDamage(), totalDamage)));
                 command = plugin.getPluginUtil().replacePlaceholder(player, command);
-                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+
+                // - '/give %player_name% diamond 1;0.1'
+                Matcher matcher = REWARD_PATTERN.matcher(command);
+                if (matcher.find()) {
+                    double chance = Double.parseDouble(matcher.group(1));
+                    if (new Random().nextDouble() <= chance)
+                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+                } else {
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+                }
             }
         }
     }
